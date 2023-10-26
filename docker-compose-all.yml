@@ -1,4 +1,24 @@
 ---
+# To run it from command line:
+# docker compose -f D:\marq\code_books\youtube\programmingTechie\spring_boot_microservices\microservices-new\docker-compose-all.yml up -d
+# [wsl2]
+# memory=6GB
+# processors=4
+# Restart WSL: Run Get-Service LxssManager | Restart-Service in an admin Powershell or reboot your system2. This will apply the changes you made in the .wslconfig file.
+# mvn clean compile jib:build
+# Remove desktop line if docker login error happens (C:\Users\${USER}\.docker\config.json):
+# {
+#	"auths": {
+#		"https://index.docker.io/v1/": {}
+#	},
+#	"credsStore": "desktop",
+#	"currentContext": "default",
+#	"plugins": {
+#		"-x-cli-hints": {
+#			"enabled": "true"
+#		}
+#	}
+# }
 version: '3.7'
 services:
   ## MySQL Docker Compose Config
@@ -90,6 +110,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
 
   broker:
     image: confluentinc/cp-kafka:7.0.1
@@ -107,6 +128,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
 
   ## Zipkin
   zipkin:
@@ -196,34 +218,3 @@ services:
       - broker
       - discovery-server
       - api-gateway
-
-  ## Prometheus
-  prometheus:
-    image: prom/prometheus:v2.37.1
-    pull_policy: always
-    container_name: prometheus
-    restart: always
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    depends_on:
-      - product-service
-      - inventory-service
-      - order-service
-      - notification-service
-
-  grafana:
-    image: grafana/grafana-oss:8.5.2
-    pull_policy: always
-    container_name: grafana
-    restart: always
-    ports:
-      - "3000:3000"
-    links:
-      - prometheus:prometheus
-    volumes:
-      - ./grafana:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=password
