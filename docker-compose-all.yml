@@ -80,7 +80,7 @@ services:
       MYSQL_DATABASE: keycloak
       MYSQL_USER: keycloak
       MYSQL_PASSWORD: password
-
+  ## To access ==> http://localhost:8080/realms/master
   keycloak:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:18.0.0
@@ -219,7 +219,7 @@ services:
       - discovery-server
       - api-gateway
 
-  ## Prometheus
+  ## Prometheus, to access ==> http://localhost:9090/targets?search=
   prometheus:
     image: prom/prometheus:v2.37.1
     container_name: prometheus
@@ -233,7 +233,7 @@ services:
       - inventory-service
       - order-service
       - notification-service
-
+  ## to access ==> http://localhost:3000/d/sOae4vCnk/spring-boot-statistics?orgId=1&refresh=5s
   grafana:
     image: grafana/grafana-oss:8.5.2
     container_name: grafana
